@@ -25,8 +25,6 @@ export default class NetworkService {
     };
 
     try {
-      console.log(`[FetchService] ${method} ${url}`, { body, headers });
-
       const response = await fetch(url, options);
 
       if (!response.ok) {
@@ -36,7 +34,6 @@ export default class NetworkService {
       }
 
       const data = await response.json();
-      console.log(`[FetchService] Response:`, data);
       return data as T;
     } catch (error: any) {
       console.error('[FetchService] Fetch failed:', error.message);

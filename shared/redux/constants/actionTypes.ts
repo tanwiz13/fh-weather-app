@@ -8,5 +8,9 @@ export default {
       SUCCESS: 'LOCATIONS_SUCCESS',
       ERROR: 'LOCATIONS_ERROR',
     },
+    LOADER: {
+      SHOW: 'SHOW_LOADER',
+      HIDE: 'HIDE_LOADER',
+    },
   },
 };

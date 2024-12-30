@@ -5,9 +5,4 @@ export interface RootState {
   home: HomeState;
 }
 
-// export default combineReducers<RootState>({
-//   home,
-// });
-
-
 export const rootReducer = combineReducers({ home: home });
