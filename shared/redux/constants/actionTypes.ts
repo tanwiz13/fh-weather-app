@@ -8,6 +8,10 @@ export default {
       SUCCESS: 'LOCATIONS_SUCCESS',
       ERROR: 'LOCATIONS_ERROR',
     },
+    FORECAST: {
+      SUCCESS: 'FORECAST_SUCCESS',
+      ERROR: 'FORECAST_ERROR',
+    },
     LOADER: {
       SHOW: 'SHOW_LOADER',
       HIDE: 'HIDE_LOADER',

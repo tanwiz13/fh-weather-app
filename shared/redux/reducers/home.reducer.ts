@@ -5,12 +5,14 @@ export interface State {
   city: {};
   locations: any[];
   showLoader: boolean;
+  forecast: {};
 }
 
 const initialState: State = {
   city: {},
   locations: [],
   showLoader: false,
+  forecast: {},
 };
 
 export default (
@@ -27,6 +29,11 @@ export default (
       return {
         ...state,
         locations: [...action.payload],
+      };
+    case actionTypes.HOME.FORECAST.SUCCESS:
+      return {
+        ...state,
+        forecast: action.payload,
       };
     case actionTypes.HOME.LOADER.SHOW:
       return {

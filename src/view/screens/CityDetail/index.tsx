@@ -3,7 +3,7 @@ import { View, StyleSheet, Text, ScrollView, Image, ActivityIndicator } from 're
 // import { Picker } from '@react-native-picker/picker';
 import RNPickerSelect from 'react-native-picker-select';
 import { connect, useDispatch } from 'react-redux';
-import { fetchCurrentWeather } from '../../../../shared/redux/thunk/home';
+import { fetchCurrentWeather, fetchForecast } from '../../../../shared/redux/thunk/home';
 import { AppDispatch } from '../../../../shared/redux/store';
 import { RootState } from '../../../../shared/redux/reducers';
 
@@ -22,6 +22,12 @@ function CityDetail({route, city, showLoader}: {route: any; city: any; showLoade
       dispatch(fetchCurrentWeather(selectedCity.url));
     }
   }, [city, dispatch, selectedCity.url, showLoader]);
+
+  useEffect(() => {
+    if (forecastDays && city?.location?.name) {
+      dispatch(fetchForecast(city?.location?.name, `${forecastDays}`));
+    }
+  }, [city, dispatch, forecastDays]);
 
   console.log('>>>>>>>>showLoader', showLoader);
 
@@ -44,6 +50,7 @@ function CityDetail({route, city, showLoader}: {route: any; city: any; showLoade
             style={{ inputIOSContainer: { pointerEvents: 'none' } }}
             onValueChange={(value) => {
               setForecastDays(value);
+              // dispatch(fetchForecast(city.location.name, `${forecastDays}`));
             }}
             placeholder={{}}
             useNativeAndroidPickerStyle
