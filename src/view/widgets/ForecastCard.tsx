@@ -1,14 +1,15 @@
 import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface ForecastCardProps {
   data: any;
+  onCardPress: Function;
 };
 
-export const ForecastCard = ({data}: ForecastCardProps) => {
+export const ForecastCard = ({data, onCardPress}: ForecastCardProps) => {
   const {day, date} = data;
   return (
-    <View style={styles.itemContainer}>
+    <TouchableOpacity style={styles.itemContainer} onPress={() => onCardPress()}>
       <Image
         source={{ uri: `https:${day?.condition?.icon}` }}
         style={styles.icon}
@@ -19,7 +20,7 @@ export const ForecastCard = ({data}: ForecastCardProps) => {
           <Text style={styles.tempText}>Low: {day.mintemp_c}°C</Text>
           <Text style={styles.tempText}>Condition: {day.condition.text}</Text>
         </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 

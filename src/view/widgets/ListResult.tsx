@@ -1,51 +1,26 @@
 import React from 'react';
 import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
-import RNPickerSelect from 'react-native-picker-select';
+import { ParamListBase, useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ForecastCard } from './ForecastCard';
 
 interface ListResultCardProps {
   city: any;
-  forecastDays: number;
-  setForecastDays: Function
   forecast: any;
 };
 
-export const ListResult = ({city, forecastDays, setForecastDays, forecast}: ListResultCardProps) => {
-  // const [forecastDays, setForecastDays] = useState(1);
-  console.log('>>>>>>>forecast in list result', forecast);
+export const ListResult = ({city, forecast}: ListResultCardProps) => {
+  const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
 
   const renderForecastItem = (day: any) => {
-    return <ForecastCard data={day}/>;
+    return <ForecastCard data={day} onCardPress={() => {navigation.navigate('Detail');}}/>;
   };
 
-  return (
-    <View>
-      <View style={styles.dropdownContainer}>
-        <Text style={styles.dropdownLabel}>Select Forecast Days:</Text>
-        <RNPickerSelect
-          style={{ inputIOSContainer: { pointerEvents: 'none' } }}
-          onValueChange={(value) => {
-            setForecastDays(value);
-          }}
-          placeholder={{}}
-          useNativeAndroidPickerStyle
-          onDonePress={() => {console.log('>>>>>>.done forecast days', forecastDays);}}
-          onClose={(donePressed: boolean) => {
-            if (donePressed) {
-              console.log('>>>>>>.done forecast days', forecastDays);
-            }
-          }}
-          value={forecastDays}
-          items={[
-            { label: '1', value: 1 },
-            { label: '2', value: 2 },
-            { label: '3', value: 3 },
-          ]}
-        />
-      </View>
-      <View style={styles.section}>
+  const renderHeader = () => {
+    return (
+      <View style={styles.header}>
         <Text style={styles.title}>Current Weather</Text>
-        <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+        <View style={styles.location}>
           <View>
             <Text style={styles.text}>{`${city.location.name}, ${city.location.region}, ${city.location.country}`}</Text>
             <Text style={styles.text}>{new Date(city.location.localtime).toDateString()}</Text>
@@ -59,15 +34,21 @@ export const ListResult = ({city, forecastDays, setForecastDays, forecast}: List
           />
         </View>
       </View>
+    );
+  };
 
+
+  return (
+    <View>
       {forecast &&
       <View style={styles.section}>
-        <Text style={styles.title}>Forecast</Text>
         <FlatList
           data={forecast}
           keyExtractor={(item, index) => String(index)}
           renderItem={({item}) => renderForecastItem(item)}
           contentContainerStyle={styles.listContainer}
+          ListHeaderComponent={renderHeader}
+          showsVerticalScrollIndicator={false}
         />
       </View>}
 
@@ -121,6 +102,18 @@ const styles = StyleSheet.create({
   listContainer: {
     // padding: 16,
     backgroundColor: '#f8f9fa',
+  },
+  header: {
+    width: '100%',
+    marginBottom: 24,
+    // padding: 16,
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+  },
+  location: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
 });
 

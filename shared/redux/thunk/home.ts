@@ -10,7 +10,7 @@ export const fetchCurrentWeather = (city: string): ThunkAction<void, RootState, 
       dispatch(showLoader());
       const response = await NetworkService.get<any[]>(`current.json?key=1c7f606a5e3540eb8dd191642242712&q=${city}`);
       dispatch(fetchCurrentWeatherSuccess(response));
-      dispatch(fetchForecast(city, '3'));
+      dispatch(fetchForecast(city, '1'));
       dispatch(hideLoader());
     } catch (error) {
       dispatch({ type: 'CITY_DETAILS_ERROR', error });

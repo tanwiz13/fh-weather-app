@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Home from './src/view/screens/Home';
 import { Provider } from 'react-redux';
 import store from './shared/redux/store';
-import CityDetail from './src/view/screens/CityDetail';
+import Detail from './src/view/screens/Detail';
 
 const Stack = createNativeStackNavigator();
 
@@ -15,7 +15,7 @@ function App(): React.JSX.Element {
       <NavigationContainer>
           <Stack.Navigator initialRouteName="Home">
               <Stack.Screen name="Home" component={Home} />
-              <Stack.Screen name="CityDetail" component={CityDetail} />
+              <Stack.Screen name="Detail" component={Detail} />
           </Stack.Navigator>
       </NavigationContainer>
     </Provider>
