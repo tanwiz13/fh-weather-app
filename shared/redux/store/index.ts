@@ -12,5 +12,5 @@ if (__DEV__) {
   middlewares = [...middlewares, logger];
 }
 
-export type AppDispatch = ThunkDispatch<RootState, unknown, Action<string>>;
+export type AppDispatch = ThunkDispatch<RootState, any, Action<string>>;
 export default createStore(rootReducer, applyMiddleware(...middlewares));

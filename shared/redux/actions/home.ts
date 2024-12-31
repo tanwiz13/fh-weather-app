@@ -18,7 +18,7 @@ export const fetchLocationSuccess = (data: any[]) => ({
   type: actionTypes.HOME.LOCATIONS.SUCCESS,
 });
 
-export const fetchForecastSuccess = (data: any[]) => ({
+export const fetchForecastSuccess = (data: any) => ({
   payload: data,
   type: actionTypes.HOME.FORECAST.SUCCESS,
 });

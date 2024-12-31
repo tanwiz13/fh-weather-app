@@ -1,19 +1,18 @@
-import { Action, Dispatch, UnknownAction } from 'redux';
+import { Action } from 'redux';
 import NetworkService from '../../api/util';
-import { ThunkAction } from 'redux-thunk';
+import { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import { RootState } from '../reducers';
 import { fetchCurrentWeatherSuccess, fetchForecastSuccess, fetchLocationSuccess, hideLoader, showLoader } from '../actions/home';
 
-export const fetchCurrentWeather = (city: string): ThunkAction<void, RootState, unknown, Action<string>> => {
-  return async (dispatch: Dispatch<UnknownAction>) => {
+export const fetchCurrentWeather = (city: string): ThunkAction<void, RootState, any, Action<string>> => {
+  return async (dispatch: ThunkDispatch<RootState, any, Action<string>>) => {
     try {
       dispatch(showLoader());
       const response = await NetworkService.get<any[]>(`current.json?key=1c7f606a5e3540eb8dd191642242712&q=${city}`);
-      console.log('>>>>>>>city', response);
       dispatch(fetchCurrentWeatherSuccess(response));
+      dispatch(fetchForecast(city, '3'));
       dispatch(hideLoader());
     } catch (error) {
-      console.log('>>>>>>>>>>;>>>>>> error', error);
       dispatch({ type: 'CITY_DETAILS_ERROR', error });
     }
     finally {
@@ -23,14 +22,12 @@ export const fetchCurrentWeather = (city: string): ThunkAction<void, RootState, 
 };
 
 export const fetchLocations = (searchString: string): ThunkAction<void, RootState, unknown, Action<string>> => {
-  return async (dispatch: Dispatch<UnknownAction>) => {
+  return async (dispatch: ThunkDispatch<RootState, any, Action<string>>) => {
     try {
       // dispatch(showLoader());
       const response = await NetworkService.get<any[]>(`search.json?key=1c7f606a5e3540eb8dd191642242712&q=${searchString}`);
-      console.log('>>>>>>>search locations', response);
       dispatch(fetchLocationSuccess(response));
     } catch (error) {
-      console.log('>>>>>>>>>>;>>>>>> error', error);
       dispatch({ type: 'LOCATIONS_ERROR', error });
     }
     finally {
@@ -40,10 +37,10 @@ export const fetchLocations = (searchString: string): ThunkAction<void, RootStat
 };
 
 export const fetchForecast = (city: string, days: string): ThunkAction<void, RootState, unknown, Action<string>> => {
-  return async (dispatch: Dispatch<UnknownAction>) => {
+  return async (dispatch: ThunkDispatch<RootState, any, Action<string>>) => {
     try {
-      const response = await NetworkService.get<any[]>(`forecast.json?key=1c7f606a5e3540eb8dd191642242712&days=${days}&q=${city}`);
-      dispatch(fetchForecastSuccess(response));
+      const response = await NetworkService.get<any>(`forecast.json?key=1c7f606a5e3540eb8dd191642242712&days=${days}&q=${city}`);
+      dispatch(fetchForecastSuccess(response?.forecast?.forecastday));
     } catch (error) {
       dispatch({ type: 'FORECAST_ERROR', error });
     }
