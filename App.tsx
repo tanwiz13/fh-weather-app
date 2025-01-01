@@ -13,7 +13,7 @@ const Stack = createNativeStackNavigator();
 
 
 function NetworkAwareApp() {
-  useNetworkDetector(); // Hook to monitor network status
+  useNetworkDetector();
   const isConnected = useSelector((state: RootState) => state.network.isConnected);
 
   if (!isConnected) {
