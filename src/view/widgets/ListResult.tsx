@@ -13,7 +13,7 @@ export const ListResult = ({city, forecast}: ListResultCardProps) => {
   const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
 
   const renderForecastItem = (day: any) => {
-    return <ForecastCard data={day} onCardPress={() => {navigation.navigate('Detail');}}/>;
+    return <ForecastCard data={day} onCardPress={() => {navigation.navigate('Detail', {data: day});}}/>;
   };
 
   const renderHeader = () => {
@@ -51,10 +51,9 @@ export const ListResult = ({city, forecast}: ListResultCardProps) => {
           showsVerticalScrollIndicator={false}
         />
       </View>}
-
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   section: {
@@ -99,10 +98,7 @@ const styles = StyleSheet.create({
     height: 40,
     color: '#333',
   },
-  listContainer: {
-    // padding: 16,
-    backgroundColor: '#f8f9fa',
-  },
+  listContainer: {},
   header: {
     width: '100%',
     marginBottom: 24,

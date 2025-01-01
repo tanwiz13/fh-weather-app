@@ -15,11 +15,11 @@ export const ForecastCard = ({data, onCardPress}: ForecastCardProps) => {
         style={styles.icon}
       />
       <View style={styles.textContainer}>
-          <Text style={styles.dateText}>Date: {new Date(date).toDateString()}</Text>
-          <Text style={styles.tempText}>High: {day.maxtemp_c}°C</Text>
-          <Text style={styles.tempText}>Low: {day.mintemp_c}°C</Text>
-          <Text style={styles.tempText}>Condition: {day.condition.text}</Text>
-        </View>
+        <Text style={styles.dateText}>Date: {new Date(date).toDateString()}</Text>
+        <Text style={styles.tempText}>High: {day.maxtemp_c}°C</Text>
+        <Text style={styles.tempText}>Low: {day.mintemp_c}°C</Text>
+        <Text style={styles.tempText}>Condition: {day.condition.text}</Text>
+      </View>
     </TouchableOpacity>
   );
 }

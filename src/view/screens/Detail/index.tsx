@@ -1,24 +1,55 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Text, ScrollView, Image, ActivityIndicator } from 'react-native';
-// import { Picker } from '@react-native-picker/picker';
-import RNPickerSelect from 'react-native-picker-select';
-import { connect, useDispatch } from 'react-redux';
-import { fetchCurrentWeather, fetchForecast } from '../../../../shared/redux/thunk/home';
-import { AppDispatch } from '../../../../shared/redux/store';
+import React from 'react';
+import { View, StyleSheet, Text, ScrollView, Image, FlatList } from 'react-native';
+import { connect } from 'react-redux';
 import { RootState } from '../../../../shared/redux/reducers';
 
-function Detail({route, city, showLoader}: {route: any; city: any; showLoader: boolean}) {
+function Detail({route, city}: {route: any; city: any;}) {
+  const { data } = route.params;
+  const { date, day, hour } = data;
 
+  const renderCondition = (item: any) => {
+    return (
+      <View style={styles.hourContainer}>
+        <Text style={styles.title}>{new Date(item.time).toLocaleTimeString()}</Text>
+        <Image
+          source={{ uri: `https:${item?.condition?.icon}` }}
+          style={styles.icon}
+        />
+        <Text style={styles.tempText}>Condition: {day.condition.text}</Text>
+      </View>
+    );
+  };
 
   return (
     <ScrollView style={styles.container}>
-      {/* Location Section */}
       <View style={styles.section}>
-        <Text style={styles.title}>Location</Text>
-        {/* <Text style={styles.text}>{city.location.name}, {city.location.region}</Text>
-        <Text style={styles.text}>{city.location.country}</Text>
-        <Text style={styles.text}>Local Time: {city.location.localtime}</Text> */}
+        <Text style={styles.title}>{`${city.location.name}, ${city.location.region}, ${city.location.country}`}</Text>
+        <Text style={styles.title}>{new Date(date).toDateString()}</Text>
+        <View style={{alignItems: 'center', flexDirection: 'row', gap: 32}}>
+          <Image
+            source={{ uri: `https:${day?.condition?.icon}` }}
+            style={styles.icon}
+          />
+          <View>
+            <Text style={styles.tempText}>High: {day.maxtemp_c}°C</Text>
+            <Text style={styles.tempText}>Low: {day.mintemp_c}°C</Text>
+            <Text style={styles.tempText}>Condition: {day.condition.text}</Text>
+          </View>
+        </View>
       </View>
+      {hour?.length > 0 &&
+        <View style={styles.section}>
+          <Text style={[styles.title, {marginTop: 8}]}>Hourly conditions</Text>
+          <FlatList
+            horizontal
+            data={hour}
+            keyExtractor={(item, index) => String(index)}
+            renderItem={({item}) => renderCondition(item)}
+            contentContainerStyle={styles.listContainer}
+            showsHorizontalScrollIndicator={false}
+          />
+        </View>
+      }
     </ScrollView>
   );
 }
@@ -26,13 +57,21 @@ function Detail({route, city, showLoader}: {route: any; city: any; showLoader: b
 function mapStateToProps(state: RootState) {
   return {
     city: state.home.city,
-    showLoader: state.home.showLoader,
   };
 }
 
 export default connect(mapStateToProps)(Detail);
 
 const styles = StyleSheet.create({
+  icon: {
+    width: 64,
+    height: 64,
+  },
+  tempText: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 4,
+  },
   container: {
     flex: 1,
     backgroundColor: '#f8f9fa',
@@ -54,31 +93,17 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     color: '#333333',
   },
-  text: {
-    fontSize: 16,
-    color: '#555555',
-    marginBottom: 4,
-  },
-  weatherIcon: {
-    width: 64,
-    height: 64,
-    marginBottom: 8,
-  },
-  dropdownContainer: {
-    marginBottom: 16,
-    backgroundColor: '#ffffff',
+  hourContainer: {
+    borderWidth: 1,
+    borderColor: 'grey',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 8,
     padding: 8,
-    borderWidth: 1,
+    marginHorizontal: 8,
   },
-  dropdownLabel: {
-    fontSize: 16,
-    color: '#333',
-    marginBottom: 4,
-  },
-  picker: {
-    height: 40,
-    color: '#333',
+  listContainer: {
+    marginVertical: 16,
   },
 });
 

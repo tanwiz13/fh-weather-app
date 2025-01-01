@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
-// import { ParamListBase, useNavigation } from '@react-navigation/native';
-// import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-// import RNPickerSelect from 'react-native-picker-select';
 import { connect, useDispatch } from 'react-redux';
 import RNPickerSelect from 'react-native-picker-select';
 import { fetchCurrentWeather, fetchForecast, fetchLocations } from '../../../../shared/redux/thunk/home';
@@ -21,10 +18,9 @@ interface HomeProps {
 
 function Home({locations, city, showLoader, forecast}: HomeProps) {
   const dispatch = useDispatch<AppDispatch>();
-  // const navigation = useNavigation<NativeStackNavigationProp<ParamListBase>>();
   const [searchText, setSearchText] = useState('');
   const [forecastDays, setForecastDays] = useState(1);
-  const debouncedSearch = useDebounce(searchText, 350);
+  const debouncedSearch = useDebounce(searchText, 100);
 
   const onSearch = (text: string) => {
     setSearchText(text);
@@ -41,11 +37,15 @@ function Home({locations, city, showLoader, forecast}: HomeProps) {
     }
   }, [debouncedSearch, dispatch]);
 
+  if (showLoader) {
+    return <ActivityIndicator style={styles.loader} animating={showLoader} />;
+  }
+
   const renderEmptyHistory = () => {
-    if (searchText && locations.length === 0) {
+    if (searchText && locations.length === 0 && !showLoader) {
       return (
         <View style={styles.empty}>
-          <Text>No results found</Text>
+          <Text style={styles.emptyText}>No results found, please try with some other keyword.</Text>
         </View>
       );
     }
@@ -62,7 +62,7 @@ function Home({locations, city, showLoader, forecast}: HomeProps) {
         }}
       >
         <Text style={{fontWeight: 'bold'}}>{item.name}</Text>
-        <Text>{item.region}</Text>
+        {item.region && <Text>{item.region}</Text>}
       </TouchableOpacity>
     );
   };
@@ -83,7 +83,7 @@ function Home({locations, city, showLoader, forecast}: HomeProps) {
                 pointerEvents: 'none',
                 justifyContent: 'center',
                 alignItems: 'center',
-                width: 32
+                width: 32,
               },
               inputAndroid: {
                 fontSize: 16,
@@ -101,12 +101,6 @@ function Home({locations, city, showLoader, forecast}: HomeProps) {
             }}
             placeholder={{}}
             useNativeAndroidPickerStyle
-            // onDonePress={() => {console.log('>>>>>>.done forecast days', forecastDays);}}
-            // onClose={(donePressed: boolean) => {
-            //   if (donePressed) {
-            //     console.log('>>>>>>.done forecast days', forecastDays);
-            //   }
-            // }}
             value={forecastDays}
             items={[
               { label: '1', value: 1 },
@@ -120,27 +114,22 @@ function Home({locations, city, showLoader, forecast}: HomeProps) {
     );
   };
 
-  if (showLoader) {
-    return <ActivityIndicator style={styles.loader} animating={showLoader} />;
-  }
-
   return (
     <View style={styles.container}>
       <SearchBar value={searchText} onSearch={onSearch} onClear={onClear} />
-      {searchText.length > 0 ? <FlatList
-        data={locations}
-        extraData={locations}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => String(index)}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.listContainer}
-        style={styles.list}
-        ListEmptyComponent={renderEmptyHistory}
-      /> : city && city.location ? (
-        renderResult()
-      ) : (
-        renderEmptyHistory()
-      )}
+      {searchText.length > 0 ? (
+        <FlatList
+          data={locations}
+          extraData={locations}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => String(index)}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContainer}
+          style={styles.list}
+          ListEmptyComponent={renderEmptyHistory}
+        />) : (city && city.location) && (
+          renderResult())
+        }
     </View>
   );
 }
@@ -201,6 +190,10 @@ const styles = StyleSheet.create({
   empty: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  emptyText: {
+    textAlign: 'center',
+    width: '80%',
   },
 });
 

@@ -78,6 +78,7 @@ const styles = StyleSheet.create({
     borderColor: TYPOGRAPHY.COLOR.TextPrimary,
   },
   searchInput: {
+    flex: 1,
     paddingLeft: 8,
     width: '80%',
     height: 44,
