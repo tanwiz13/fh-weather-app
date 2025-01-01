@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, StyleSheet, FlatList, Text, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
 import { connect, useDispatch } from 'react-redux';
 import RNPickerSelect from 'react-native-picker-select';
 import { fetchCurrentWeather, fetchForecast, fetchLocations } from '../../../../shared/redux/thunk/home';
@@ -18,9 +18,10 @@ interface HomeProps {
 
 function Home({locations, city, showLoader, forecast}: HomeProps) {
   const dispatch = useDispatch<AppDispatch>();
-  const [searchText, setSearchText] = useState('');
-  const [forecastDays, setForecastDays] = useState(1);
+  const [searchText, setSearchText] = useState<string>('');
+  const [forecastDays, setForecastDays] = useState<number>(1);
   const debouncedSearch = useDebounce(searchText, 100);
+  const pickerRef = useRef<any>(undefined);
 
   const onSearch = (text: string) => {
     setSearchText(text);
@@ -67,32 +68,36 @@ function Home({locations, city, showLoader, forecast}: HomeProps) {
     );
   };
 
+  const openPicker = () => {
+    if (Platform.OS === 'android') {
+      pickerRef && pickerRef?.current?.focus();
+    } else {
+      pickerRef && pickerRef?.current?.togglePicker(true);
+    }
+  };
+
   const renderResult = () => {
     return (
       <View style={styles.result}>
-        <View style={styles.dropdownContainer}>
+        <TouchableOpacity onPress={() => {openPicker();}} style={styles.dropdownContainer}>
           <Text style={styles.dropdownLabel}>Select Forecast Days:</Text>
           <RNPickerSelect
+            ref={Platform.OS === 'ios' ? pickerRef : null}
+            pickerProps={{ ref: Platform.OS === 'android' ? pickerRef : null }}
             style={{
               inputIOS: {
                 fontSize: 16,
-                borderWidth: 1,
-                borderColor: 'gray',
-                borderRadius: 4,
-                color: 'black',
                 pointerEvents: 'none',
-                justifyContent: 'center',
-                alignItems: 'center',
-                width: 32,
               },
               inputAndroid: {
                 fontSize: 16,
                 paddingHorizontal: 10,
                 paddingVertical: 8,
-                borderWidth: 0.5,
-                borderColor: 'purple',
+                borderWidth: 1,
+                borderColor: 'grey',
                 borderRadius: 8,
                 color: 'black',
+                width: 32,
               },
             }}
             onValueChange={(value) => {
@@ -100,7 +105,7 @@ function Home({locations, city, showLoader, forecast}: HomeProps) {
               dispatch(fetchForecast(city.location.name, value));
             }}
             placeholder={{}}
-            useNativeAndroidPickerStyle
+            useNativeAndroidPickerStyle={false}
             value={forecastDays}
             items={[
               { label: '1', value: 1 },
@@ -108,7 +113,7 @@ function Home({locations, city, showLoader, forecast}: HomeProps) {
               { label: '7', value: 7 },
             ]}
           />
-        </View>
+        </TouchableOpacity>
         <ListResult city={city} forecast={forecast} />
       </View>
     );
@@ -146,6 +151,17 @@ function mapStateToProps(state: RootState) {
 export default connect(mapStateToProps)(Home);
 
 const styles = StyleSheet.create({
+  section: {
+    width: '100%',
+    marginBottom: 24,
+    padding: 16,
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
   container: {
     flex: 1,
     padding: 16,
@@ -161,14 +177,22 @@ const styles = StyleSheet.create({
   dropdownContainer: {
     marginBottom: 16,
     backgroundColor: '#ffffff',
-    borderRadius: 8,
     padding: 8,
-    // borderWidth: 1,
+    borderWidth: 0.5,
+    borderColor: 'grey',
     flexDirection: 'row',
+    gap: 16,
+    alignItems: 'center',
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   dropdownLabel: {
     fontSize: 16,
-    color: '#333',
+    fontWeight: 'bold',
+    color: '#333333',
   },
   list: {width: '100%'},
   loader: {
