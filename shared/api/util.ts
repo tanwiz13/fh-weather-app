@@ -53,3 +53,12 @@ export default class NetworkService {
     return this.request<T>(endpoint, 'POST', body, headers);
   }
 }
+
+export const beautifyUrl = (url: string, replacements: string[]): string => {
+  let beautifiedUrl = url;
+  for (let i = 0; i < replacements.length; i += 1) {
+    beautifiedUrl = beautifiedUrl.replace('{?}', replacements[i]);
+  }
+
+  return beautifiedUrl;
+};

@@ -1,15 +1,16 @@
 import { Action } from 'redux';
 import Toast from 'react-native-simple-toast';
-import NetworkService from '../../api/util';
+import NetworkService, { beautifyUrl } from '../../api/util';
 import { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import { RootState } from '../reducers';
 import { fetchCurrentWeatherSuccess, fetchForecastSuccess, fetchLocationSuccess, hideLoader, showLoader } from '../actions/home';
+import { Config } from '../../api/constants';
 
 export const fetchCurrentWeather = (city: string): ThunkAction<void, RootState, any, Action<string>> => {
   return async (dispatch: ThunkDispatch<RootState, any, Action<string>>) => {
     try {
       dispatch(showLoader());
-      const response = await NetworkService.get<any[]>(`current.json?key=1c7f606a5e3540eb8dd191642242712&q=${city}`);
+      const response = await NetworkService.get<any[]>(beautifyUrl(Config.api.getCurrentWeather, [Config.api.key, city]));
       dispatch(fetchCurrentWeatherSuccess(response));
       dispatch(fetchForecast(city, '1'));
       dispatch(hideLoader());
@@ -27,7 +28,7 @@ export const fetchLocations = (searchString: string): ThunkAction<void, RootStat
   return async (dispatch: ThunkDispatch<RootState, any, Action<string>>) => {
     try {
       // dispatch(showLoader());
-      const response = await NetworkService.get<any[]>(`search.json?key=1c7f606a5e3540eb8dd191642242712&q=${searchString}`);
+      const response = await NetworkService.get<any[]>(beautifyUrl(Config.api.searchLocation, [Config.api.key, searchString]));
       dispatch(fetchLocationSuccess(response));
     } catch (error) {
       dispatch({ type: 'LOCATIONS_ERROR', error });
@@ -42,7 +43,7 @@ export const fetchLocations = (searchString: string): ThunkAction<void, RootStat
 export const fetchForecast = (city: string, days: string): ThunkAction<void, RootState, unknown, Action<string>> => {
   return async (dispatch: ThunkDispatch<RootState, any, Action<string>>) => {
     try {
-      const response = await NetworkService.get<any>(`forecast.json?key=1c7f606a5e3540eb8dd191642242712&days=${days}&q=${city}`);
+      const response = await NetworkService.get<any>(beautifyUrl(Config.api.getForecast, [Config.api.key, days, city]));
       dispatch(fetchForecastSuccess(response?.forecast?.forecastday));
     } catch (error) {
       dispatch({ type: 'FORECAST_ERROR', error });
